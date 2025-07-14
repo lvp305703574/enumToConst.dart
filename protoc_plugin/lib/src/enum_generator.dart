@@ -40,17 +40,16 @@ class EnumGenerator extends ProtobufContainer {
     Set<String> usedClassNames,
     int repeatedFieldIndex,
     int fieldIdTag,
-  ) : _fieldPathSegment = [fieldIdTag, repeatedFieldIndex],
-      classname = messageOrEnumClassName(
-        descriptor.name,
-        usedClassNames,
-        parent: parent.classname ?? '',
-      ),
-      fullName =
-          parent.fullName == ''
-              ? descriptor.name
-              : '${parent.fullName}.${descriptor.name}',
-      _descriptor = descriptor {
+  )   : _fieldPathSegment = [fieldIdTag, repeatedFieldIndex],
+        classname = messageOrEnumClassName(
+          descriptor.name,
+          usedClassNames,
+          parent: parent.classname ?? '',
+        ),
+        fullName = parent.fullName == ''
+            ? descriptor.name
+            : '${parent.fullName}.${descriptor.name}',
+        _descriptor = descriptor {
     final usedNames = {...reservedEnumNames};
     for (var i = 0; i < descriptor.value.length; i++) {
       final value = descriptor.value[i];
@@ -81,12 +80,12 @@ class EnumGenerator extends ProtobufContainer {
     Set<String> usedClassNames,
     int repeatedFieldIndex,
   ) : this._(
-        descriptor,
-        parent,
-        usedClassNames,
-        repeatedFieldIndex,
-        _topLevelFieldTag,
-      );
+          descriptor,
+          parent,
+          usedClassNames,
+          repeatedFieldIndex,
+          _topLevelFieldTag,
+        );
 
   EnumGenerator.nested(
     EnumDescriptorProto descriptor,
@@ -94,12 +93,12 @@ class EnumGenerator extends ProtobufContainer {
     Set<String> usedClassNames,
     int repeatedFieldIndex,
   ) : this._(
-        descriptor,
-        parent,
-        usedClassNames,
-        repeatedFieldIndex,
-        _nestedFieldTag,
-      );
+          descriptor,
+          parent,
+          usedClassNames,
+          repeatedFieldIndex,
+          _nestedFieldTag,
+        );
 
   @override
   String get package => parent.package;
@@ -134,6 +133,16 @@ class EnumGenerator extends ProtobufContainer {
     if (_descriptor.options.deprecated) {
       out.println('@$coreImportPrefix.Deprecated(\'This enum is deprecated\')');
     }
+
+    //------------------
+    for (var i = 0; i < _canonicalValues.length; i++) {
+      final val = _canonicalValues[i];
+      final name = dartNames[val.name]!;
+      out.println("const $classname$name = ${val.number};");
+    }
+    out.println();
+    //------------------
+/*
     out.addAnnotatedBlock(
       'class $classname extends $protobufImportPrefix.ProtobufEnum {',
       '}\n',
@@ -225,8 +234,7 @@ class EnumGenerator extends ProtobufContainer {
           }
         }
 
-        final useList =
-            _canonicalValues.isEmpty ||
+        final useList = _canonicalValues.isEmpty ||
             (maxEnumValue >= 0 &&
                 _canonicalValues.length / (maxEnumValue + 1) >= 0.7);
 
@@ -256,7 +264,7 @@ class EnumGenerator extends ProtobufContainer {
 
         out.println('const $classname._(super.value, super.name);');
       },
-    );
+    );*/
   }
 
   /// Writes a Dart constant containing the JSON for the EnumProtoDescriptor.
